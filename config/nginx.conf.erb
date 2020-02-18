@@ -46,9 +46,10 @@ http {
             set $upstream heroku_apps;
             proxy_redirect off;
             proxy_pass https://$upstream;
-            proxy_set_header x-forwarded-host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header Host $host:$server_port;
+            proxy_set_header Host $http_host;
         }
 
     }
