@@ -30,14 +30,20 @@ http {
   # Must read the body in 5 seconds.
   client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
+  # handle SNI
+    proxy_ssl_server_name on;
+    proxy_ssl_name *.herokuapp.com;
+  # resolver needs to be set because we're using dynamic proxy_pass
+    resolver 8.8.8.8;
+
   upstream heroku_backend {
-    server intradarmajaya2.herokuapp.com;
-    server intradarmajaya-stage.herokuapp.com;
+    server intradarmajaya2.herokuapp.com:443;
+    server intradarmajaya-stage.herokuapp.com:443;
   }
 
   server {
     listen <%= ENV["PORT"] %>;
-    server_name herokuapp.com;
+    server_name _;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
     large_client_header_buffers 2 1k;
     root /app/; # path to your app
