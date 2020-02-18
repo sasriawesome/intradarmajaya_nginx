@@ -40,7 +40,7 @@ http {
 
     server {
         listen <%= ENV["PORT"] %>;
-        server_name _;
+        server_name *.herokuapp.com;;
 
         location / {
             set $upstream heroku_apps;
@@ -48,7 +48,7 @@ http {
             proxy_pass https://$upstream;
             proxy_set_header x-forwarded-host $host;
             proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header Host $http_host;
+            proxy_set_header Host $host;
         }
 
     }
