@@ -127,3 +127,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# IDE Stuff
+*.idea
+*.vscode
+*.sqlite3
+
+# Autgenerated directory
+staticfiles/
+media/
+notebooks/
+/dist/
