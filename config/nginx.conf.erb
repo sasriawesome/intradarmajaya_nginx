@@ -34,18 +34,18 @@ http {
     resolver 8.8.8.8;
 
     server {
-      listen 8001 default_server;
-      server_name _;
-      location / {
+      listen <%= ENV["PORT"] %>;
+      server_name a.example.local;
+      location /resolver_app_1 {
         proxy_pass https://intradarmajaya-dev.herokuapp.com:443;
         proxy_set_header Host intradarmajaya-dev.herokuapp.com;
       }
     }
 
     server {
-      listen 8002 default_server;
-      server_name _;
-      location / {
+      listen <%= ENV["PORT"] %>;
+      server_name b.example.local;
+      location /resolver_app_2 {
         proxy_pass https://intradarmajaya-stage.herokuapp.com:443;
         proxy_set_header Host intradarmajaya-stage.herokuapp.com;
       }
@@ -53,8 +53,8 @@ http {
 
 
     upstream heroku_apps {
-        server 127.0.0.1:8001;
-        server 127.0.0.1:8002;
+        server a.example.local;
+        server b.example.local;
     }
 
     server {
