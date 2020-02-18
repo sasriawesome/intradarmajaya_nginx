@@ -34,18 +34,18 @@ http {
     resolver 8.8.8.8;
 
     server {
-      listen <%= ENV["PORT"] %>;
-      server_name a.example.local;
-      location /resolver_app_1 {
+      listen <%= ENV["PORT"] %>81;
+      server__;
+      location / {
         proxy_pass https://intradarmajaya-dev.herokuapp.com:443;
         proxy_set_header Host intradarmajaya-dev.herokuapp.com;
       }
     }
 
     server {
-      listen <%= ENV["PORT"] %>;
-      server_name b.example.local;
-      location /resolver_app_2 {
+      listen <%= ENV["PORT"] %>82;
+      server_name _;
+      location / {
         proxy_pass https://intradarmajaya-stage.herokuapp.com:443;
         proxy_set_header Host intradarmajaya-stage.herokuapp.com;
       }
