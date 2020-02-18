@@ -37,7 +37,6 @@ http {
         listen 80 default_server;
         server_name _;
         location / {
-            $upstream $date_gmt;
             if ($date_gmt ~ 00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15) {
                 set $backend_url https://intradarmajaya-dev.herokuapp.com;
                 set $backend_host intradarmajaya-dev.herokuapp.com:443;
