@@ -33,12 +33,8 @@ http {
     # resolver needs to be set because we're using dynamic proxy_pass
     resolver 8.8.8.8;
 
-    upstream upstream_app_a {
-        server intradarmajaya.herokuapp.com:443;
-        server intradarmajaya-stage.herokuapp.com:443;
-    }
-
-    upstream upstream_app_b {
+    upstream heroku_apps {
+        server intradarmajaya-dev.herokuapp.com:443;
         server intradarmajaya-stage.herokuapp.com:443;
     }
 
@@ -47,19 +43,11 @@ http {
         server_name _;
 
         location / {
-            set $upstream upstream_app_a;
+            set $upstream heroku_apps;
             proxy_pass https://$upstream;
             proxy_set_header x-forwarded-host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header Host intradarmajaya.herokuapp.com;
-        }
-
-        location /other {
-            set $upstream upstream_app_b;
-            proxy_pass https://$upstream;
-            proxy_set_header x-forwarded-host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header Host intradarmajaya-stage.herokuapp.com;
         }
     }
 }
