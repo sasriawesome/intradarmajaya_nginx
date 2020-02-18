@@ -13,12 +13,17 @@ http {
   gzip_comp_level 2;
   gzip_min_length 512;
 
+	# # - Basic Settings
+
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  types_hash_max_size 2048;
   server_tokens off;
 
   log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
   access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
   error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
-
 
   include mime.types;
   default_type application/octet-stream;
@@ -35,13 +40,11 @@ http {
   server {
     listen <%= ENV["PORT"] %>;
     server_name herokuapp.com;
-    keepalive_timeout 5;
-    large_client_header_buffers 4 32k;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
 
     root /app/; # path to your app
 
-    location / {
+    location /intra {
         proxy_redirect     off;
         proxy_set_header   X-Real-IP         $remote_addr;
         proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
