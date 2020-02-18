@@ -40,7 +40,7 @@ http {
 
     server {
         listen <%= ENV["PORT"] %>;
-        server_name *.herokuapp.com;;
+        server_name *.herokuapp.com;
 
         location / {
             set $upstream heroku_apps;
