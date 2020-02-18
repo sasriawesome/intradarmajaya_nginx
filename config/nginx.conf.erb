@@ -31,20 +31,22 @@ http {
     server intradarmajaya2.herokuapp.com;
     server intradarmajaya-stage.herokuapp.com;
   }
+
   server {
-    listen <%= ENV["PORT"] %>;
+    listen 80 default_server;
     server_name _;
-    keepalive_timeout 5;
-    client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
-
-    root /app/public; # path to your app
-
-    location /intra {
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass http://heroku_backend;
+    location / {
+        set_formatted_local_time $upstream "%S";
+        if ($upstream ~ 00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15) {
+            set $backend_url http://intradarmajaya.herokuapp.com;
+            set $backend_host intradarmajaya.herokuapp.com;
+        }
+        if ($upstream ~ 16|17|18|19|20|21|22|23|24|25|26|27|28|29|30) {
+            set $backend_url https://intradarmajaya2.herokuapp.com;
+            set $backend_host intradarmajaya2.herokuapp.com;
+        }
+        proxy_pass $backend_url;
+        proxy_set_header Host $backend_host;
     }
-
   }
 }
