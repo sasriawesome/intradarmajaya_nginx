@@ -50,8 +50,8 @@ http {
                 set $backend_host intradarmajaya-dev.herokuapp.com:443;
             }
             if ($date_gmt ~ 46|47|48|49|50|51|52|53|54|55|56|57|58|59) {
-                set $backend_url https://intradarmajaya-stage.herokuapp.com;
-                set $backend_host intradarmajaya-stage.herokuapp.com:443;
+                set $backend_url https://ahaamoment.herokuapp.com;
+                set $backend_host ahaamoment.herokuapp.com:443;
             }
             proxy_pass $backend_url;
             proxy_set_header Host $backend_host;
