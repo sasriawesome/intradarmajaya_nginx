@@ -33,30 +33,28 @@ http {
     # resolver needs to be set because we're using dynamic proxy_pass
     resolver 8.8.8.8;
 
-    map $request_uri $my_upstream {
-          33% server1.domainX.com;
-          33% server2.domainX.com;
-          * server3.domainX.com;
-     }
-
-    upstream heroku_apps {
-        server intradarmajaya-dev.herokuapp.com:443;
-        server intradarmajaya-stage.herokuapp.com:443;
-    }
-
     server {
-        listen <%= ENV["PORT"] %>;
+        listen 80 default_server;
         server_name _;
-
         location / {
-            set $upstream heroku_apps;
-            proxy_redirect off;
-            proxy_pass https://$upstream;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header Host $http_host;
+            $upstream $date_gmt;
+            if ($date_gmt ~ 00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15) {
+                set $backend_url https://intradarmajaya-dev.herokuapp.com;
+                set $backend_host intradarmajaya-dev.herokuapp.com:443;
+            }
+            if ($date_gmt ~ 16|17|18|19|20|21|22|23|24|25|26|27|28|29|30) {
+                set $backend_url https://intradarmajaya-stage.herokuapp.com;
+                set $backend_host intradarmajaya-stage.herokuapp.com:443;
+            }
+            if ($date_gmt ~ 31|32|33|34|35|36|37|38|39|40|41|42|43|44|45) {
+                set $backend_url https://intradarmajaya-dev.herokuapp.com;
+                set $backend_host intradarmajaya-dev.herokuapp.com:443;
+            }
+            if ($date_gmt ~ 46|47|48|49|50|51|52|53|54|55|56|57|58|59) {
+                set $backend_url https://intradarmajaya-stage.herokuapp.com;
+                set $backend_host intradarmajaya-stage.herokuapp.com:443;
+            }
+            proxy_pass $backend_url;
+            proxy_set_header Host $backend_host;
         }
-
-    }
 }
