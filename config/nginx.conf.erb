@@ -1,65 +1,64 @@
 daemon off;
-# Heroku dynos have at least 4 cores.
+# Heroku dynos have at least 4 cores
 worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
 
 events {
-  use epoll;
-  accept_mutex on;
-  worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+    use epoll;
+    accept_mutex on;
+    worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
 }
 
 http {
-  gzip on;
-  gzip_comp_level 2;
-  gzip_min_length 512;
+    gzip on;
+    gzip_comp_level 2;
+    gzip_min_length 512;
+    server_tokens off;
 
-	# # - Basic Settings
+    log_format main '$time_iso8601 - $status $request - client IP: $http_x_forwarded_for - to $upstream_addr - upstream status: $upstream_status, upstream_response_time $upstream_response_time, request_time $request_time';
+    access_log /dev/stdout main;
+    # set the following to "debug" when diagnosing an issue
+    error_log /dev/stdout notice;
+    log_not_found on;
 
-  tcp_nopush on;
-  tcp_nodelay on;
-  types_hash_max_size 2048;
-  server_tokens off;
-  include mime.types;
-  sendfile on;
-  default_type application/octet-stream;
+    include mime.types;
+    default_type application/octet-stream;
+    sendfile on;
 
-  log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
-  access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
-  error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
+    # Must read the body in 5 seconds.
+    client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
 
-  # Must read the body in 5 seconds.
-  client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
-
-  # handle SNI
+    # handle SNI
     proxy_ssl_server_name on;
     proxy_ssl_name *.herokuapp.com;
-  # resolver needs to be set because we're using dynamic proxy_pass
+    # resolver needs to be set because we're using dynamic proxy_pass
     resolver 8.8.8.8;
 
-  upstream heroku_backend {
-    server intradarmajaya2.herokuapp.com:443;
-    server intradarmajaya-stage.herokuapp.com:443;
-  }
-
-  server {
-    listen <%= ENV["PORT"] %>;
-    server_name _;
-    client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
-    large_client_header_buffers 2 1k;
-    root /app/; # path to your app
-
-    location /intra {
-        proxy_redirect     off;
-        proxy_set_header   X-Real-IP         $remote_addr;
-        proxy_set_header   x-forwarded-host  $host;
-        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header   X-Forwarded-Proto $scheme;
-        proxy_set_header   Host              $http_host;
-        proxy_set_header   X-NginX-Proxy     true;
-        proxy_set_header   Connection        "";
-        proxy_http_version 1.1;
-        proxy_pass https://heroku_backend;
+    upstream upstream_app_a {
+        server intradarmajaya.herokuapp.com:443;
     }
 
-  }
+    upstream upstream_app_b {
+        server intradarmajaya-stage.herokuapp.com:443;
+    }
+
+    server {
+        listen <%= ENV["PORT"] %>;
+        server_name _;
+
+        location / {
+            set $upstream upstream_app_a;
+            proxy_pass https://$upstream;
+            proxy_set_header x-forwarded-host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Host intradarmajaya.herokuapp.com;
+        }
+
+        location /other {
+            set $upstream upstream_app_b;
+            proxy_pass https://$upstream;
+            proxy_set_header x-forwarded-host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Host intradarmajaya-stage.herokuapp.com;
+        }
+    }
 }
