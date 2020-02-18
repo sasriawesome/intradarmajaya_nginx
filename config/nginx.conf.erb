@@ -34,7 +34,7 @@ http {
     resolver 8.8.8.8;
 
     server {
-        listen 80 default_server;
+        listen <%= ENV['PORT']%>;
         server_name _;
         location / {
             if ($date_gmt ~ 00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15) {
