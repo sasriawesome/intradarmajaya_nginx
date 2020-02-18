@@ -42,12 +42,20 @@ http {
         listen <%= ENV["PORT"] %>;
         server_name _;
 
-        location /app_1 {
+        location / {
             set $upstream heroku_apps;
-            proxy_pass https://$upstream;
+            if ($upstream ~ 00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15) {
+                set $backend_url https://intradarmajaya-dev.herokuapp:443;
+                set $backend_host intradarmajaya-dev.herokuapp.com;
+            }
+            if ($upstream ~ 00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15) {
+                set $backend_url https://intradarmajaya-stage.herokuapp:443;
+                set $backend_host intradarmajaya-stage.herokuapp.com;
+            }
+            proxy_pass $backend_url;
+            proxy_set_header Host $backend_host;
             proxy_set_header x-forwarded-host $host;
             proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header Host $upstream;
         }
 
     }
