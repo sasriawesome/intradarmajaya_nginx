@@ -39,7 +39,7 @@ http {
     listen <%= ENV["PORT"] %>;
     server_name herokuapp.com;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
-
+    large_client_header_buffers 2 1k;
     root /app/; # path to your app
 
     location /intra {
