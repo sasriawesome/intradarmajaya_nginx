@@ -29,13 +29,13 @@ http {
 
     # handle SNI
     proxy_ssl_server_name on;
-    proxy_ssl_name *.herokuapp.com;
+    proxy_ssl_name *.darmajaya.ac.id;
     # resolver needs to be set because we're using dynamic proxy_pass
     resolver 8.8.8.8;
 
     server {
         listen <%= ENV['PORT']%>;
-        server_name _;
+        server_name intra.darmajaya.ac.id;
         location / {
             if ($date_gmt ~ 00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15) {
                 set $backend_url https://intradarmajaya1.herokuapp.com;
