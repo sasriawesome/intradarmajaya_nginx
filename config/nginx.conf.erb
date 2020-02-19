@@ -38,20 +38,20 @@ http {
         server_name _;
         location / {
             if ($date_gmt ~ 00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15) {
-                set $backend_url https://ahaamoment1.herokuapp.com;
-                set $backend_host ahaamoment1.herokuapp.com:443;
+                set $backend_url https://intradarmajaya1.herokuapp.com;
+                set $backend_host intradarmajaya1.herokuapp.com:443;
             }
             if ($date_gmt ~ 16|17|18|19|20|21|22|23|24|25|26|27|28|29|30) {
-                set $backend_url https://ahaamoment2.herokuapp.com;
-                set $backend_host ahaamoment2.herokuapp.com:443;
+                set $backend_url https://intradarmajaya2.herokuapp.com;
+                set $backend_host intradarmajaya2.herokuapp.com:443;
             }
             if ($date_gmt ~ 31|32|33|34|35|36|37|38|39|40|41|42|43|44|45) {
-                set $backend_url https://ahaamoment3.herokuapp.com;
-                set $backend_host ahaamoment3.herokuapp.com:443;
+                set $backend_url https://intradarmajaya3.herokuapp.com;
+                set $backend_host intradarmajaya3.herokuapp.com:443;
             }
             if ($date_gmt ~ 46|47|48|49|50|51|52|53|54|55|56|57|58|59) {
-                set $backend_url https://ahaamoment4.herokuapp.com;
-                set $backend_host ahaamoment4.herokuapp.com:443;
+                set $backend_url https://intradarmajaya4.herokuapp.com;
+                set $backend_host intradarmajaya4.herokuapp.com:443;
             }
             proxy_pass $backend_url;
             proxy_set_header Host $backend_host;
